@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from bandit import NonStationaryBandit
 from policy.UCB import discounted_ucb
 from policy.UCB import sliding_window
+from policy.UCB import f_dsw
 
 def mu_0(t) :
     return 0.5
@@ -27,8 +28,8 @@ T = 10000
 
 N=10
 
-functions = [sliding_window, discounted_ucb]
-params = [ [T, int(4*np.sqrt(T*np.log(T))), 0.5, 0.6], [T, 0.9, 0.5, 0.6] ]
+functions = [sliding_window, discounted_ucb, f_dsw]
+params = [ [T, int(4*np.sqrt(T*np.log(T))), 0.5, 0.6], [T, 0.9, 0.5, 0.6], [T, int(4*np.sqrt(T*np.log(T))), 0.9, 0.5, 0.6, np.min] ]
 for func, params in zip(functions, params):
     cumul_regret = []
     print(func.__name__)
