@@ -3,19 +3,19 @@ import numpy as np
 def discounted_ucb(bandit, T, gamma, B, xi) :
     K = bandit.get_K()
 
-    X = np.zeros((K, T))
-    nbs = np.zeros((K, T))
     N_t = np.zeros(K)
     X_t = np.zeros(K)
 
     for t in range (K) : 
         r = bandit.play(t, t) 
-        X[ :, t] = np.zeros(K)
-        X[t][t]= r
-        nbs[: , t] = np.zeros(K)
-        nbs[t][t] = 1
-        N_t = gamma*N_t + nbs[:, t]
-        X_t = gamma*X_t + X[:, t]
+        new_N = np.zeros(K)
+        new_N[t] = 1
+
+        new_X = np.zeros(K)
+        new_X[t] = r
+
+        N_t = gamma*N_t + new_N
+        X_t = gamma*X_t + new_X
     
     for t in range(K, T) :
 
@@ -29,13 +29,14 @@ def discounted_ucb(bandit, T, gamma, B, xi) :
         r = bandit.play(I_t, t)
 
         #Update
-        X[:, t] = np.zeros(K)
-        X[I_t][t] = r
-        nbs[:, t] = np.zeros(K)
-        nbs[I_t][t] = 1
+        new_N = np.zeros(K)
+        new_N[I_t] = 1
 
-        N_t = gamma*N_t + nbs[:, t]
-        X_t = gamma*X_t + X[:, t]
+        new_X = np.zeros(K)
+        new_X[I_t] = r
+
+        N_t = gamma*N_t + new_N
+        X_t = gamma*X_t + new_X
 
 def sliding_window(bandit, T, tau, B, xi) :
     K = bandit.get_K()
@@ -73,8 +74,6 @@ def sliding_window(bandit, T, tau, B, xi) :
 def f_dsw(bandit, T, tau, gamma, xi, B, f) : 
     K = bandit.get_K()
 
-    X = np.zeros((K, T))
-    nbs = np.zeros((K, T))
     N_t = np.zeros(K)
     X_t = np.zeros(K)
     X_hat = np.zeros((K, tau))
@@ -82,12 +81,15 @@ def f_dsw(bandit, T, tau, gamma, xi, B, f) :
 
     for t in range (K) : 
         r = bandit.play(t, t)
-        X[ :, t] = np.zeros(K)
-        X[t][t]= r
-        nbs[: , t] = np.zeros(K)
-        nbs[t][t] = 1
-        N_t = gamma*N_t + nbs[:, t]
-        X_t = gamma*X_t + X[:, t]
+        
+        new_N = np.zeros(K)
+        new_N[t] = 1
+
+        new_X = np.zeros(K)
+        new_X[t] = r
+    
+        N_t = gamma*N_t + new_N
+        X_t = gamma*X_t + new_X
         if t >= K-tau :  
             X_hat[ :, t%tau] = np.zeros(K)
             X_hat[t][t%tau]= r
@@ -119,10 +121,11 @@ def f_dsw(bandit, T, tau, gamma, xi, B, f) :
         nbs_hat[:, t%tau] = np.zeros(K)
         nbs_hat[I_t][t%tau] = 1
 
-        X[:, t] = np.zeros(K)
-        X[I_t][t] = r
-        nbs[:, t] = np.zeros(K)
-        nbs[I_t][t] = 1
+        new_N = np.zeros(K)
+        new_N[I_t] = 1
 
-        N_t = gamma*N_t + nbs[:, t]
-        X_t = gamma*X_t + X[:, t]
+        new_X = np.zeros(K)
+        new_X[I_t] = r
+
+        N_t = gamma*N_t + new_N
+        X_t = gamma*X_t + new_X
