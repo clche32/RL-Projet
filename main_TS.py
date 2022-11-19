@@ -1,22 +1,11 @@
 import matplotlib.pyplot as plt
 
 from bandit import NonStationaryBandit
+from means import *
 from policy.TS import discounted_ts
 from policy.TS import sliding_window_ts
 
-def mu_0(t) :
-    return 0.5
-
-def mu_1(t) :
-    return 0.3
-
-def mu_2(t) :
-    if t < 300 or t >= 1000 :
-        return 0.1
-    else :
-        return 0.9
-
-means = [mu_0, mu_1, mu_2]
+means = [mu_stable_0, mu_stable_0, mu_abrupt_thin]
 T = 2000
 alpha, beta = 1, 1 # Uniform prior
 gamma = 0.999 # Discount factor
