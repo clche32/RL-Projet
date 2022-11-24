@@ -29,7 +29,7 @@ def plot_regret(instances, runs):
 
         avg_regret = np.mean(regret, axis=0)
         std_regret = np.std(regret, axis=0)
-        plt.plot(avg_cumul_regret, label="%s.%s"%(strategy.__module__, strategy.__name__))
+        plt.plot(avg_regret, label="%s.%s"%(strategy.__module__, strategy.__name__))
         plt.fill_between(range(len(avg_regret)), avg_regret, avg_regret+std_regret, alpha=0.4)
     plt.legend()
     plt.show()
