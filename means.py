@@ -6,6 +6,12 @@ def mu_stable_0(t) :
 def mu_stable_1(t) :
     return 0.3
 
+def mu_abrupt(t) :
+    if t < 500:
+        return 0.3
+    else:
+        return 0.7
+
 def mu_abrupt_thin(t) :
     if t < 300 or t >= 1000 :
         return 0.1
@@ -29,6 +35,12 @@ def mu_incremental(t) :
         return 0.8 - 0.6/(t-200) # vaut 0.2 à t = 201 puis tend vers 0.8
     else :
         return 0.2
+
+def mu_linear(t) :
+    if (t<1000):
+        return t/1000
+    else:
+        return 1
 
 class RandomAbruptFunction:
     def __init__(self, d, seed=None):
