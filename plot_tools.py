@@ -59,7 +59,7 @@ def plot_regret(instances, runs, N, label_mode=None):
     plt.legend()
 
 def plot_means(means, T):
-    '''Affiche les fonctions de récompenses moyennes jusqu'à T'''
+    '''Affiche les fonctions de récompenses moyennes jusqu'à T.'''
     plt.figure()
     for i in range(len(means)):
         y = np.zeros(T)
@@ -72,7 +72,7 @@ def plot_means(means, T):
     plt.legend()
 
 def plot_estimated_means(means, runs, N, title_mode=None):
-    '''Pour des runs UCB.'''
+    '''Pour des runs UCB. Affiche la moyenne empirique au temps t + écart type.'''
     n_runs = len(runs)
     fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
@@ -105,7 +105,7 @@ def plot_estimated_means(means, runs, N, title_mode=None):
         plt.legend(loc=2)
 
 def plot_ucbs(means, runs, N, title_mode=None):
-    '''Pour des runs UCB.'''
+    '''Pour des runs UCB. Affiche la moyenne empirique au temps t + intervalle de conf. '''
     n_runs = len(runs)
     fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
@@ -141,7 +141,7 @@ def plot_ucbs(means, runs, N, title_mode=None):
         plt.legend(loc=2)
 
 def plot_posterior_means(means, runs, N, title_mode=None):
-    '''Pour des runs Thompson Sampling, mais pas vraiment utile'''
+    '''Pour des runs Thompson Sampling, mais pas vraiment utile.'''
     n_runs = len(runs)
     fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
@@ -174,7 +174,7 @@ def plot_posterior_means(means, runs, N, title_mode=None):
         plt.legend(loc=2)
 
 def plot_arm_pulls(means, runs, N, title_mode=None):
-    '''Affiche le nombre de fois qu'une action a été jouée'''
+    '''Affiche le nombre de fois qu'une action a été jouée.'''
     n_runs = len(runs)
     fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
