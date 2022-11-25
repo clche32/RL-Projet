@@ -6,6 +6,8 @@ def discounted(bandit, T, alpha, beta, gamma, seed=None):
     alpha and beta, discount factor gamma, and (optional) random seed.'''
     K = bandit.get_K()
 
+    # NEW : return statistics (expectation of posterior dist.) to plot stuff
+    stats = np.zeros((K,T))
     # to compute the posterior beta distribution for each action
     # i.e : Beta(alpha + S_k, beta + F_k)
     S = np.zeros(K)
@@ -14,6 +16,9 @@ def discounted(bandit, T, alpha, beta, gamma, seed=None):
     random = np.random.RandomState(seed)
 
     for t in range(T):
+        # log stats
+        stats[:,t] = (alpha + S)/(alpha + S + beta + F) # expectation
+
         # draw random samples
         samples = np.zeros(K)
         for k in range(K):
@@ -30,18 +35,22 @@ def discounted(bandit, T, alpha, beta, gamma, seed=None):
         S[k_t] += r_t
         F[k_t] += 1-r_t
 
+    return stats
+
 def sliding_window(bandit, T, alpha, beta, tau, seed=None):
     '''Play the given non-stationary bandit over T rounds using the
     sliding window TS strategy for Bernoulli bandits with given priors
     alpha and beta, window size tau, and (optional) random seed.'''
     K = bandit.get_K()
 
+    # NEW : return statistics (expectation of posterior dist.) to plot stuff
+    stats = np.zeros((K,T))
     # to compute the posterior beta distribution for each action
     # i.e : Beta(alpha + S_k, beta + F_k)
     S = np.zeros(K)
     F = np.zeros(K)
 
-    # NEW : to track the action played and reward obtained at time t
+    # to track the action played and reward obtained at time t
     # in order to subtract it from S and F when t is no longer in the window
     action_played = []
     reward_obtained = []
@@ -49,6 +58,9 @@ def sliding_window(bandit, T, alpha, beta, tau, seed=None):
     random = np.random.RandomState(seed)
 
     for t in range(T):
+        # log stats
+        stats[:,t] = (alpha + S)/(alpha + S + beta + F) # expectation
+
         # draw random samples
         samples = np.zeros(K)
         for k in range(K):
@@ -68,6 +80,8 @@ def sliding_window(bandit, T, alpha, beta, tau, seed=None):
             F[k] -= 1-r
         S[k_t] += r_t
         F[k_t] += 1-r_t
+
+    return stats
 
 def f_dsw(bandit, T, alpha, beta, gamma, tau, f, seed=None):
     '''Play the given non-stationary bandit over T rounds using the
