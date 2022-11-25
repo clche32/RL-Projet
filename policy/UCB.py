@@ -1,8 +1,10 @@
 import numpy as np
 
-def discounted_ucb(bandit, T, gamma, B, xi) :
+def discounted(bandit, T, gamma, xi) :
     K = bandit.get_K()
 
+    # NEW : return statistics (means and trusts) to plot UCBs
+    stats = np.zeros((2,K,T-K))
     N_t = np.zeros(K)
     X_t = np.zeros(K)
 
@@ -20,9 +22,11 @@ def discounted_ucb(bandit, T, gamma, B, xi) :
     for t in range(K, T) :
 
         #Compute the ucbs
-        means = (1/(N_t+1))*X_t
-        trusts = 2*B*np.sqrt(xi*np.log(np.sum(N_t))/(N_t+1))
+        means = (1/N_t)*X_t # Pas besoin de +1 car N_t positif tant que gamma est non nul
+        trusts = np.sqrt(xi*np.log(np.sum(N_t))/N_t)
         ucbs = means + trusts
+        stats[0,:,t-K] = means
+        stats[1,:,t-K] = trusts
         
         #Choose and play
         I_t = np.argmax(ucbs)
@@ -37,10 +41,14 @@ def discounted_ucb(bandit, T, gamma, B, xi) :
 
         N_t = gamma*N_t + new_N
         X_t = gamma*X_t + new_X
+    
+    return stats
 
-def sliding_window(bandit, T, tau, B, xi) :
+def sliding_window(bandit, T, tau, xi) :
     K = bandit.get_K()
 
+    # NEW : return statistics (means and trusts) to plot UCBs
+    stats = np.zeros((2,K,T-K))
     X = np.zeros((K, tau))
     nbs = np.zeros((K, tau))
 
@@ -54,11 +62,12 @@ def sliding_window(bandit, T, tau, B, xi) :
         
 
     for t in range(K, T) :
-
         #Compute the ucbs
-        means = (1/(np.sum(nbs,1)+1))*np.sum(X, 1) # +1 Pour éviter les valeurs nulles
-        trusts = B*np.sqrt(xi*np.log(min(t, tau))/(np.sum(nbs,1)+1))
+        means = (1/(np.sum(nbs,1)+0.01))*np.sum(X, 1) # +0.01 pour éviter division par zéro
+        trusts = np.sqrt(xi*np.log(min(t, tau))/(np.sum(nbs,1)+0.01))
         ucbs = means + trusts
+        stats[0,:,t-K] = means
+        stats[1,:,t-K] = trusts
         
         #Choose and play
         I_t = np.argmax(ucbs)
@@ -70,8 +79,9 @@ def sliding_window(bandit, T, tau, B, xi) :
         nbs[:, t%tau] = np.zeros(K)
         nbs[I_t][t%tau] = 1
 
+    return stats
 
-def f_dsw(bandit, T, tau, gamma, xi, B, f) : 
+def f_dsw(bandit, T, tau, gamma, xi, f) : 
     K = bandit.get_K()
 
     N_t = np.zeros(K)
@@ -100,12 +110,12 @@ def f_dsw(bandit, T, tau, gamma, xi, B, f) :
     for t in range(K, T) :
 
         #Compute the ucbs
-        means_hat = (1/(np.sum(nbs_hat,1)+1))*np.sum(X_hat, 1) # +1 Pour éviter les valeurs nulles
-        trusts_hat = B*np.sqrt(xi*np.log(min(t, tau))/(np.sum(nbs_hat,1)+1))
+        means_hat = (1/(np.sum(nbs_hat,1)+0.01))*np.sum(X_hat, 1)
+        trusts_hat = np.sqrt(xi*np.log(min(t, tau))/(np.sum(nbs_hat,1)+0.01))
         ucbs_hat = means_hat + trusts_hat
         
-        means = (1/(N_t+1))*X_t
-        trusts = 2*B*np.sqrt(xi*np.log(np.sum(N_t))/(N_t+1))
+        means = (1/N_t)*X_t
+        trusts = np.sqrt(xi*np.log(np.sum(N_t))/N_t)
         ucbs = means + trusts
 
         #Choose and play
