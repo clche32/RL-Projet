@@ -15,8 +15,8 @@ ucb = [[UCB.sliding_window, {'T':1000, 'tau':200, 'xi':0.5}],
        [UCB.f_dsw, {'T':1000, 'tau':200, 'gamma':0.995, 'f':np.min, 'xi':0.5}]]
 
 ts = [[TS.sliding_window, {'T':1000, 'tau':150, 'alpha':1, 'beta':1}],
-      [TS.discounted, {'T':1000, 'gamma':0.99, 'alpha':1, 'beta':1}],
-      [TS.f_dsw, {'T':1000, 'tau':150, 'gamma':0.99, 'f':np.mean, 'alpha':1, 'beta':1}]]
+      [TS.discounted, {'T':1000, 'gamma':0.985, 'alpha':1, 'beta':1}],
+      [TS.f_dsw, {'T':1000, 'tau':150, 'gamma':0.985, 'f':np.mean, 'alpha':1, 'beta':1}]]
 
 #plot_means(means, T=1000)
 #plt.figure()
