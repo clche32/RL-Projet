@@ -3,7 +3,7 @@ import numpy as np
 def discounted(bandit, T, gamma, xi) :
     K = bandit.get_K()
 
-    # NEW : return statistics (means and trusts) to plot UCBs
+    # NEW : return statistics (means and ucbs) to plot UCBs
     stats = np.zeros((2,K,T-K))
     N_t = np.zeros(K)
     X_t = np.zeros(K)
@@ -26,7 +26,7 @@ def discounted(bandit, T, gamma, xi) :
         trusts = np.sqrt(xi*np.log(np.sum(N_t))/N_t)
         ucbs = means + trusts
         stats[0,:,t-K] = means
-        stats[1,:,t-K] = trusts
+        stats[1,:,t-K] = ucbs
         
         #Choose and play
         I_t = np.argmax(ucbs)
@@ -47,7 +47,7 @@ def discounted(bandit, T, gamma, xi) :
 def sliding_window(bandit, T, tau, xi) :
     K = bandit.get_K()
 
-    # NEW : return statistics (means and trusts) to plot UCBs
+    # NEW : return statistics (means and ucbs) to plot UCBs
     stats = np.zeros((2,K,T-K))
     X = np.zeros((K, tau))
     nbs = np.zeros((K, tau))
@@ -67,7 +67,7 @@ def sliding_window(bandit, T, tau, xi) :
         trusts = np.sqrt(xi*np.log(min(t, tau))/(np.sum(nbs,1)+0.01))
         ucbs = means + trusts
         stats[0,:,t-K] = means
-        stats[1,:,t-K] = trusts
+        stats[1,:,t-K] = ucbs
         
         #Choose and play
         I_t = np.argmax(ucbs)
@@ -84,6 +84,8 @@ def sliding_window(bandit, T, tau, xi) :
 def f_dsw(bandit, T, tau, gamma, xi, f) : 
     K = bandit.get_K()
 
+    # NEW : return statistics (means (here, irrelevant) and ucbs) to plot UCBs
+    stats = np.zeros((2,K,T-K))
     N_t = np.zeros(K)
     X_t = np.zeros(K)
     X_hat = np.zeros((K, tau))
@@ -121,7 +123,9 @@ def f_dsw(bandit, T, tau, gamma, xi, f) :
         #Choose and play
         new = np.zeros(K)
         for i in range (K) :
-            new[i] = f([ucbs[i], ucbs_hat[i]]) 
+            new[i] = f([ucbs[i], ucbs_hat[i]])
+        stats[0,:,t-K] = means # arbitrarily takes means from SW : not relevant
+        stats[1,:,t-K] = new
         I_t = np.argmax(new)
         r = bandit.play(I_t, t)
 
@@ -139,3 +143,5 @@ def f_dsw(bandit, T, tau, gamma, xi, f) :
 
         N_t = gamma*N_t + new_N
         X_t = gamma*X_t + new_X
+
+    return stats

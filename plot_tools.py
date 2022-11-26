@@ -11,8 +11,8 @@ param_dict = {"sliding_window": "tau",
              "discounted": "gamma"}
 
 def plot_cumul_regret(instances, runs, N, label_mode=None):
-    for run in runs:
-        strategy, params = run
+    for run_idx in range(len(runs)):
+        strategy, params = runs[run_idx]
         cumul_regret = []
         for i in range(len(instances)):
             means = instances[i]
@@ -24,7 +24,7 @@ def plot_cumul_regret(instances, runs, N, label_mode=None):
         avg_cumul_regret = np.mean(cumul_regret, axis=0)
         std_cumul_regret = np.std(cumul_regret, axis=0)
         if label_mode=="strategy":
-            plt.plot(avg_cumul_regret, label=name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            plt.plot(avg_cumul_regret, color="C%i"%run_idx, label=name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
         if label_mode=="params":
             param_name = param_dict[strategy.__name__]
             plt.plot(avg_cumul_regret, label="$\%s$ = %s"%(param_name, params[param_name]))
@@ -115,31 +115,30 @@ def plot_ucbs(means, runs, N, title_mode=None):
         ax = plt.subplot(n_runs, 1, run_idx+1)
         ax.set_ylim(0,1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__],y=0.85)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
             ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
         # Repeat same run N times with different bandit seeds
-        est_means = []
-        trusts = []
+        ucbs = []
         for n in range(N):
             bandit = NonStationaryBandit(means, seed=n)
             stats = strategy(bandit, **params)
-            est_means.append(stats[0,:,:])
-            trusts.append(stats[1,:,:])
-        avg_est_means = np.mean(est_means, axis=0)
-        avg_trusts = np.mean(trusts, axis=0)
+            ucbs.append(stats[1,:,:])
+        avg_ucbs = np.mean(ucbs, axis=0)
+        std_ucbs = np.std(ucbs, axis=0)
         K = len(means)
         T = params["T"]
         for k in range(K):
             # Plot avg estimated mean
-            ax.plot(range(K,T), avg_est_means[k,:], alpha=0.7)
-            ax.fill_between(range(K,T), avg_est_means[k,:], avg_est_means[k,:]+avg_trusts[k,:], alpha=0.4)
+            ax.plot(range(K,T), avg_ucbs[k,:], alpha=0.7)
+            ax.fill_between(range(K,T), avg_ucbs[k,:], avg_ucbs[k,:]+std_ucbs[k,:], alpha=0.4)
             # Plot true mean in dashed lines
             y = np.zeros(T)
             for t in range(T):
                 y[t] = means[k](t)
             ax.plot(range(T), y, '--', color="C%i"%k, label="Arm %i"%k)
+        plt.ylabel('$UCB_k(t)$')
         plt.legend(loc=2)
 
 def plot_posterior_means(means, runs, N, title_mode=None):
