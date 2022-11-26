@@ -19,6 +19,8 @@ def plot_cumul_regret(instances, runs, N, label_mode=None):
             # Repeat same run N times with different bandit seeds
             for n in range(N):
                 bandit = NonStationaryBandit(means, seed=n)
+                if module_dict[strategy.__module__] == "TS":
+                    params['seed'] = n
                 strategy(bandit, **params)
                 cumul_regret.append(bandit.get_cumulative_regret())
         avg_cumul_regret = np.mean(cumul_regret, axis=0)
@@ -44,6 +46,8 @@ def plot_regret(instances, runs, N, label_mode=None):
             # Repeat same run N times with different bandit seeds
             for n in range(N):
                 bandit = NonStationaryBandit(means, seed=n)
+                if module_dict[strategy.__module__] == "TS":
+                    params['seed'] = n
                 strategy(bandit, **params)
                 regret.append(bandit.regret)
         avg_regret = np.mean(regret, axis=0)
@@ -138,7 +142,7 @@ def plot_ucbs(means, runs, N, title_mode=None):
             for t in range(T):
                 y[t] = means[k](t)
             ax.plot(range(T), y, '--', color="C%i"%k, label="Arm %i"%k)
-        plt.ylabel('$UCB_k(t)$')
+        plt.ylabel(r'$\mathrm{UCB}_k(t)$')
         plt.legend(loc=2)
 
 def plot_samples(means, runs, N, title_mode=None):
@@ -150,7 +154,7 @@ def plot_samples(means, runs, N, title_mode=None):
         ax = plt.subplot(n_runs, 1, run_idx+1)
         ax.set_ylim(0,1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__], y=0.85)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
             ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
@@ -158,6 +162,7 @@ def plot_samples(means, runs, N, title_mode=None):
         est_means = []
         for n in range(N):
             bandit = NonStationaryBandit(means, seed=n)
+            params['seed'] = n
             est_means.append(strategy(bandit, **params))
         avg_est_means = np.mean(est_means, axis=0)
         std_est_means = np.std(est_means, axis=0)
@@ -172,6 +177,7 @@ def plot_samples(means, runs, N, title_mode=None):
             for t in range(T):
                 y[t] = means[k](t)
             ax.plot(range(T), y, '--', color="C%i"%k, label="Arm %i"%k)
+        plt.ylabel(r'$\theta_k(t)$')
         plt.legend(loc=2)
 
 def plot_arm_pulls(means, runs, N, title_mode=None):
@@ -190,6 +196,8 @@ def plot_arm_pulls(means, runs, N, title_mode=None):
         arm_pulls = []
         for n in range(N):
             bandit = NonStationaryBandit(means, seed=n)
+            if module_dict[strategy.__module__] == "TS":
+                params['seed'] = n
             strategy(bandit, **params)
             arm_pulls.append(bandit.get_N())
         avg_arm_pulls = np.mean(arm_pulls, axis=0)
