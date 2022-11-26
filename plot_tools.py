@@ -27,17 +27,17 @@ def plot_cumul_regret(instances, runs, N, label_mode=None):
             plt.plot(avg_cumul_regret, color="C%i"%run_idx, label=name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
         if label_mode=="params":
             param_name = param_dict[strategy.__name__]
-            plt.plot(avg_cumul_regret, label="$\%s$ = %s"%(param_name, params[param_name]))
+            plt.plot(avg_cumul_regret, color="C%i"%run_idx, label="$\%s$ = %s"%(param_name, params[param_name]))
         else:
-            plt.plot(avg_cumul_regret)
+            plt.plot(avg_cumul_regret, color="C%i"%run_idx)
         plt.fill_between(range(len(avg_cumul_regret)), avg_cumul_regret, avg_cumul_regret+std_cumul_regret, alpha=0.4)
     plt.xlabel('$t$')
     plt.ylabel('Pseudo-regret cumulatif')
     plt.legend(loc=2)
 
 def plot_regret(instances, runs, N, label_mode=None):
-    for run in runs:
-        strategy, params = run
+    for run_idx in range(len(runs)):
+        strategy, params = runs[run_idx]
         regret = []
         for i in range(len(instances)):
             means = instances[i]
@@ -49,12 +49,12 @@ def plot_regret(instances, runs, N, label_mode=None):
         avg_regret = np.mean(regret, axis=0)
         std_regret = np.std(regret, axis=0)
         if label_mode=="strategy":
-            plt.plot(avg_regret, label=name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            plt.plot(avg_regret, color="C%i"%run_idx, label=name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
         if label_mode=="params":
             param_name = param_dict[strategy.__name__]
-            plt.plot(avg_regret, label="$\%s$ = %s"%(param_name, params[param_name]))
+            plt.plot(avg_regret, color="C%i"%run_idx, label="$\%s$ = %s"%(param_name, params[param_name]))
         else:
-            plt.plot(avg_regret)
+            plt.plot(avg_regret, color="C%i"%run_idx)
         plt.fill_between(range(len(avg_regret)), avg_regret, avg_regret+std_regret, alpha=0.4)
     plt.xlabel('$t$')
     plt.ylabel('Pseudo-regret instantané')
@@ -141,8 +141,8 @@ def plot_ucbs(means, runs, N, title_mode=None):
         plt.ylabel('$UCB_k(t)$')
         plt.legend(loc=2)
 
-def plot_posterior_means(means, runs, N, title_mode=None):
-    '''Pour des runs Thompson Sampling, mais pas vraiment utile.'''
+def plot_samples(means, runs, N, title_mode=None):
+    '''Pour des runs Thompson Sampling'''
     n_runs = len(runs)
 #   fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):

@@ -120,7 +120,7 @@ def f_dsw(bandit, T, alpha, beta, gamma, tau, f, seed=None):
         stats[:,t] = samples_f_dsw
 
         # play the action with highest sample
-        k_t = np.argmax(samples_max)
+        k_t = np.argmax(samples_f_dsw)
         r_t = bandit.play(k_t, t)
         action_played.append(k_t)
         reward_obtained.append(r_t)
