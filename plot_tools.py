@@ -11,7 +11,6 @@ param_dict = {"sliding_window": "tau",
              "discounted": "gamma"}
 
 def plot_cumul_regret(instances, runs, N, label_mode=None):
-    plt.figure()
     for run in runs:
         strategy, params = run
         cumul_regret = []
@@ -32,10 +31,11 @@ def plot_cumul_regret(instances, runs, N, label_mode=None):
         else:
             plt.plot(avg_cumul_regret)
         plt.fill_between(range(len(avg_cumul_regret)), avg_cumul_regret, avg_cumul_regret+std_cumul_regret, alpha=0.4)
-    plt.legend()
+    plt.xlabel('$t$')
+    plt.ylabel('Pseudo-regret cumulatif')
+    plt.legend(loc=2)
 
 def plot_regret(instances, runs, N, label_mode=None):
-    plt.figure()
     for run in runs:
         strategy, params = run
         regret = []
@@ -56,16 +56,17 @@ def plot_regret(instances, runs, N, label_mode=None):
         else:
             plt.plot(avg_regret)
         plt.fill_between(range(len(avg_regret)), avg_regret, avg_regret+std_regret, alpha=0.4)
+    plt.xlabel('$t$')
+    plt.ylabel('Pseudo-regret instantané')
     plt.legend()
 
 def plot_means(means, T):
     '''Affiche les fonctions de récompenses moyennes jusqu'à T.'''
-    plt.figure()
     for i in range(len(means)):
         y = np.zeros(T)
         for t in range(T):
             y[t] = means[i](t)
-        plt.plot(y, label="Arm %i"%i)
+        plt.plot(y, label="$k$ = %i"%i)
     plt.ylim(0,1)
     plt.xlabel('$t$')
     plt.ylabel('$\mu_k(t)$')
@@ -74,7 +75,7 @@ def plot_means(means, T):
 def plot_estimated_means(means, runs, N, title_mode=None):
     '''Pour des runs UCB. Affiche la moyenne empirique au temps t + écart type.'''
     n_runs = len(runs)
-    fig = plt.figure(figsize=(6.4, n_runs*4.8))
+#   fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
         strategy, params = runs[run_idx]
         ax = plt.subplot(n_runs, 1, run_idx+1)
@@ -102,12 +103,13 @@ def plot_estimated_means(means, runs, N, title_mode=None):
             for t in range(T):
                 y[t] = means[k](t)
             ax.plot(range(T), y, '--', color="C%i"%k, label="Arm %i"%k)
+        plt.ylabel('$\hat{\mu}_k(t)$')
         plt.legend(loc=2)
 
 def plot_ucbs(means, runs, N, title_mode=None):
     '''Pour des runs UCB. Affiche la moyenne empirique au temps t + intervalle de conf. '''
     n_runs = len(runs)
-    fig = plt.figure(figsize=(6.4, n_runs*4.8))
+#   fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
         strategy, params = runs[run_idx]
         ax = plt.subplot(n_runs, 1, run_idx+1)
@@ -143,7 +145,7 @@ def plot_ucbs(means, runs, N, title_mode=None):
 def plot_posterior_means(means, runs, N, title_mode=None):
     '''Pour des runs Thompson Sampling, mais pas vraiment utile.'''
     n_runs = len(runs)
-    fig = plt.figure(figsize=(6.4, n_runs*4.8))
+#   fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
         strategy, params = runs[run_idx]
         ax = plt.subplot(n_runs, 1, run_idx+1)
@@ -176,7 +178,7 @@ def plot_posterior_means(means, runs, N, title_mode=None):
 def plot_arm_pulls(means, runs, N, title_mode=None):
     '''Affiche le nombre de fois qu'une action a été jouée.'''
     n_runs = len(runs)
-    fig = plt.figure(figsize=(6.4, n_runs*4.8))
+#   fig = plt.figure(figsize=(6.4, n_runs*4.8))
     for run_idx in range(n_runs):
         strategy, params = runs[run_idx]
         ax = plt.subplot(n_runs, 1, run_idx+1)
@@ -197,5 +199,7 @@ def plot_arm_pulls(means, runs, N, title_mode=None):
         T = params["T"]
         for k in range(K):
             # Plot avg pulls
-            ax.plot(avg_arm_pulls[k,:], alpha=0.7)
+            ax.plot(avg_arm_pulls[k,:], alpha=0.7, label="Arm %i"%k)
             ax.fill_between(range(T),avg_arm_pulls[k,:], avg_arm_pulls[k,:]+std_arm_pulls[k,:], alpha=0.4)
+        plt.ylabel('$N_k(t)$')
+        plt.legend(loc=2)

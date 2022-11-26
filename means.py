@@ -7,7 +7,7 @@ def mu_stable_1(t) :
     return 0.3
 
 def mu_abrupt(t) :
-    if t < 500:
+    if t < 200 or t >= 600:
         return 0.3
     else:
         return 0.7
