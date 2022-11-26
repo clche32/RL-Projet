@@ -140,3 +140,5 @@ def f_dsw(bandit, T, alpha, beta, gamma, tau, f, seed=None):
             F_sw[k] -= 1-r
         S_sw[k_t] += r_t
         F_sw[k_t] += 1-r_t
+
+    return stats

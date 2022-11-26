@@ -12,6 +12,18 @@ def mu_abrupt(t) :
     else:
         return 0.7
 
+def mu_abrupt_decreasing(t) :
+    if t < 500:
+        return 0.7
+    else:
+        return 0.3
+
+def mu_abrupt_increasing(t) :
+    if t < 500:
+        return 0.3
+    else:
+        return 0.7
+
 def mu_abrupt_thin(t) :
     if t < 300 or t >= 1000 :
         return 0.1
