@@ -6,7 +6,7 @@ def discounted(bandit, T, alpha, beta, gamma, seed=None):
     alpha and beta, discount factor gamma, and (optional) random seed.'''
     K = bandit.get_K()
 
-    # NEW : return statistics (expectation of posterior dist.) to plot stuff
+    # NEW : return statistics (samples) to plot stuff
     stats = np.zeros((K,T))
     # to compute the posterior beta distribution for each action
     # i.e : Beta(alpha + S_k, beta + F_k)
@@ -16,13 +16,13 @@ def discounted(bandit, T, alpha, beta, gamma, seed=None):
     random = np.random.RandomState(seed)
 
     for t in range(T):
-        # log stats
-        stats[:,t] = (alpha + S)/(alpha + S + beta + F) # expectation
-
         # draw random samples
         samples = np.zeros(K)
         for k in range(K):
             samples[k] = random.beta(alpha + S[k], beta + F[k])
+
+        # log stats
+        stats[:,t] = samples
 
         # play the action with highest sample
         k_t = np.argmax(samples)
@@ -43,7 +43,7 @@ def sliding_window(bandit, T, alpha, beta, tau, seed=None):
     alpha and beta, window size tau, and (optional) random seed.'''
     K = bandit.get_K()
 
-    # NEW : return statistics (expectation of posterior dist.) to plot stuff
+    # NEW : return statistics (samples) to plot stuff
     stats = np.zeros((K,T))
     # to compute the posterior beta distribution for each action
     # i.e : Beta(alpha + S_k, beta + F_k)
@@ -58,13 +58,13 @@ def sliding_window(bandit, T, alpha, beta, tau, seed=None):
     random = np.random.RandomState(seed)
 
     for t in range(T):
-        # log stats
-        stats[:,t] = (alpha + S)/(alpha + S + beta + F) # expectation
-
         # draw random samples
         samples = np.zeros(K)
         for k in range(K):
             samples[k] = random.beta(alpha + S[k], beta + F[k])
+
+        # log stats
+        stats[:,t] = samples
 
         # play the action with highest sample
         k_t = np.argmax(samples)
@@ -90,6 +90,8 @@ def f_dsw(bandit, T, alpha, beta, gamma, tau, f, seed=None):
     and (optional) random seed.'''
     K = bandit.get_K()
 
+    # NEW : return statistics (samples) to plot stuff
+    stats = np.zeros((K,T))
     # to compute the posterior beta distribution for each action
     # i.e : Beta(alpha + S_k, beta + F_k)
     S_d = np.zeros(K)
@@ -108,11 +110,14 @@ def f_dsw(bandit, T, alpha, beta, gamma, tau, f, seed=None):
         # draw random samples
         samples_d = np.zeros(K)
         samples_sw = np.zeros(K)
-        samples_max = np.zeros(K)
+        samples_f_dsw = np.zeros(K)
         for k in range(K):
             samples_d[k] = random.beta(alpha + S_d[k], beta + F_d[k])
             samples_sw[k] = random.beta(alpha + S_sw[k], beta + F_sw[k])
-            samples_max[k] = f(samples_d[k], samples_sw[k])
+            samples_f_dsw[k] = f([samples_d[k], samples_sw[k]])
+
+        # log stats
+        stats[:,t] = samples_f_dsw
 
         # play the action with highest sample
         k_t = np.argmax(samples_max)
