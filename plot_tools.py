@@ -6,7 +6,9 @@ module_dict = {"policy.TS": "TS",
                "policy.UCB": "UCB"}
 name_dict = {"sliding_window": "SW",
              "discounted": "D",
-             "f_dsw": "f-DSW"}
+             "f_dsw": "f-DSW",
+             "ucb1": "Stationnaire",
+             "ts_bernoulli": "Stationnaire"}
 param_dict = {"sliding_window": "tau",
              "discounted": "gamma"}
 
@@ -119,10 +121,10 @@ def plot_ucbs(means, runs, N, title_mode=None):
         ax = plt.subplot(n_runs, 1, run_idx+1)
         ax.set_ylim(0,1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__],y=0.85)
+            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__],y=0.80)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
-            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
+            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.80)
         # Repeat same run N times with different bandit seeds
         ucbs = []
         for n in range(N):
@@ -154,10 +156,10 @@ def plot_samples(means, runs, N, title_mode=None):
         ax = plt.subplot(n_runs, 1, run_idx+1)
         ax.set_ylim(0,1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__], y=0.85)
+            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__], y=0.75)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
-            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
+            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.75)
         # Repeat same run N times with different bandit seeds
         est_means = []
         for n in range(N):

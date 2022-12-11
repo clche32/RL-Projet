@@ -1,5 +1,28 @@
 import numpy as np
 
+def ts_bernoulli(bandit, T, alpha, beta, seed=None):
+    '''Play the given bandit over T rounds using the TS strategy
+    for Bernoulli bandits with given priors alpha and beta, and
+    (optional) random seed.'''
+    K = bandit.get_K()
+    r = np.zeros(K)
+    n = np.zeros(K)
+
+    random = np.random.RandomState(seed)
+
+    stats = np.zeros((K,T))
+
+    for t in range(K, T) :
+        samples = np.zeros(K)
+        for k in range(K):
+            samples[k] = random.beta(alpha+r[k], beta+n[k]-r[k])
+        stats[:,t] = samples
+        k = np.argmax(samples)
+        r[k] += bandit.play(k, t)
+        n[k] += 1
+
+    return stats
+
 def discounted(bandit, T, alpha, beta, gamma, seed=None):
     '''Play the given non-stationary bandit over T rounds using the
     discounted TS strategy for Bernoulli bandits with given priors

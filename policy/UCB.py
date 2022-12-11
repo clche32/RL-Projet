@@ -1,5 +1,30 @@
 import numpy as np
 
+def ucb1(bandit, T, seed=None):
+    K = bandit.get_K()
+    r = np.zeros(K)
+    n = np.zeros(K)
+
+    # NEW : return statistics (means and ucbs) to plot UCBs
+    stats = np.zeros((2,K,T-K))
+    
+    for t in range (K) :
+        r[t]+=bandit.play(t, t)
+        n[t]+=1
+    
+    for t in range (K, T) :
+        ucb1 = r/n + np.sqrt(2*np.log(t)/n)
+
+        stats[0,:,t-K] = r/n
+        stats[1,:,t-K] = ucb1
+
+        k = np.argmax(ucb1)
+        r[k]+=bandit.play(k, t)
+        n[k]+=1
+    
+    return stats
+
+
 def discounted(bandit, T, gamma, xi) :
     K = bandit.get_K()
 
