@@ -4,9 +4,10 @@ from bandit import NonStationaryBandit
 
 module_dict = {"policy.TS": "TS",
                "policy.UCB": "UCB"}
-name_dict = {"sliding_window": "SW",
-             "discounted": "D",
-             "f_dsw": "f-DSW"}
+name_dict = {"sliding_window": "SW-",
+             "discounted": "D-",
+             "f_dsw": "f-DSW-",
+             "vanilla": ""}
 param_dict = {"sliding_window": "tau",
              "discounted": "gamma"}
 
@@ -26,16 +27,16 @@ def plot_cumul_regret(instances, runs, N, label_mode=None):
         avg_cumul_regret = np.mean(cumul_regret, axis=0)
         std_cumul_regret = np.std(cumul_regret, axis=0)
         if label_mode=="strategy":
-            plt.plot(avg_cumul_regret, color="C%i"%run_idx, label=name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            plt.plot(avg_cumul_regret, color="C%i"%run_idx, label=name_dict[strategy.__name__] + module_dict[strategy.__module__])
         if label_mode=="params":
             param_name = param_dict[strategy.__name__]
             plt.plot(avg_cumul_regret, color="C%i"%run_idx, label="$\%s$ = %s"%(param_name, params[param_name]))
         else:
             plt.plot(avg_cumul_regret, color="C%i"%run_idx)
         plt.fill_between(range(len(avg_cumul_regret)), avg_cumul_regret, avg_cumul_regret+std_cumul_regret, alpha=0.4)
-    plt.xlabel('$t$')
-    plt.ylabel('Pseudo-regret cumulatif')
-    plt.legend(loc=2)
+    #plt.ylim(ymax=90)
+    plt.ylabel('R(t)')
+    plt.legend(loc=2, fontsize='x-large')
 
 def plot_regret(instances, runs, N, label_mode=None):
     for run_idx in range(len(runs)):
@@ -53,14 +54,13 @@ def plot_regret(instances, runs, N, label_mode=None):
         avg_regret = np.mean(regret, axis=0)
         std_regret = np.std(regret, axis=0)
         if label_mode=="strategy":
-            plt.plot(avg_regret, color="C%i"%run_idx, label=name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            plt.plot(avg_regret, color="C%i"%run_idx, label=name_dict[strategy.__name__] + module_dict[strategy.__module__])
         if label_mode=="params":
             param_name = param_dict[strategy.__name__]
             plt.plot(avg_regret, color="C%i"%run_idx, label="$\%s$ = %s"%(param_name, params[param_name]))
         else:
             plt.plot(avg_regret, color="C%i"%run_idx)
         plt.fill_between(range(len(avg_regret)), avg_regret, avg_regret+std_regret, alpha=0.4)
-    plt.xlabel('$t$')
     plt.ylabel('Pseudo-regret instantané')
     plt.legend()
 
@@ -85,7 +85,7 @@ def plot_estimated_means(means, runs, N, title_mode=None):
         ax = plt.subplot(n_runs, 1, run_idx+1)
         ax.set_ylim(0,1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            ax.set_title(name_dict[strategy.__name__] + module_dict[strategy.__module__])
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
             ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
@@ -106,7 +106,7 @@ def plot_estimated_means(means, runs, N, title_mode=None):
             y = np.zeros(T)
             for t in range(T):
                 y[t] = means[k](t)
-            ax.plot(range(T), y, '--', color="C%i"%k, label="Arm %i"%k)
+            ax.plot(range(T), y, '--', color="C%i"%k, label="k = %i"%k)
         plt.ylabel('$\hat{\mu}_k(t)$')
         plt.legend(loc=2)
 
@@ -119,7 +119,7 @@ def plot_ucbs(means, runs, N, title_mode=None):
         ax = plt.subplot(n_runs, 1, run_idx+1)
         ax.set_ylim(0,1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__],y=0.85)
+            ax.set_title(name_dict[strategy.__name__] + module_dict[strategy.__module__],y=0.85)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
             ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
@@ -141,7 +141,7 @@ def plot_ucbs(means, runs, N, title_mode=None):
             y = np.zeros(T)
             for t in range(T):
                 y[t] = means[k](t)
-            ax.plot(range(T), y, '--', color="C%i"%k, label="Arm %i"%k)
+            ax.plot(range(T), y, '--', color="C%i"%k, label="k = %i"%k)
         plt.ylabel(r'$\mathrm{UCB}_k(t)$')
         plt.legend(loc=2)
 
@@ -154,7 +154,7 @@ def plot_samples(means, runs, N, title_mode=None):
         ax = plt.subplot(n_runs, 1, run_idx+1)
         ax.set_ylim(0,1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__], y=0.85)
+            ax.set_title(name_dict[strategy.__name__] + module_dict[strategy.__module__], y=0.85)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
             ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
@@ -176,7 +176,7 @@ def plot_samples(means, runs, N, title_mode=None):
             y = np.zeros(T)
             for t in range(T):
                 y[t] = means[k](t)
-            ax.plot(range(T), y, '--', color="C%i"%k, label="Arm %i"%k)
+            ax.plot(range(T), y, '--', color="C%i"%k, label="k = %i"%k)
         plt.ylabel(r'$\theta_k(t)$')
         plt.legend(loc=2)
 
@@ -188,7 +188,7 @@ def plot_arm_pulls(means, runs, N, title_mode=None):
         strategy, params = runs[run_idx]
         ax = plt.subplot(n_runs, 1, run_idx+1)
         if title_mode=="strategy":
-            ax.set_title(name_dict[strategy.__name__] + "-" + module_dict[strategy.__module__])
+            ax.set_title(name_dict[strategy.__name__] + module_dict[strategy.__module__])
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
             ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
@@ -206,7 +206,7 @@ def plot_arm_pulls(means, runs, N, title_mode=None):
         T = params["T"]
         for k in range(K):
             # Plot avg pulls
-            ax.plot(avg_arm_pulls[k,:], alpha=0.7, label="Arm %i"%k)
+            ax.plot(avg_arm_pulls[k,:], alpha=0.7, label="k = %i"%k)
             ax.fill_between(range(T),avg_arm_pulls[k,:], avg_arm_pulls[k,:]+std_arm_pulls[k,:], alpha=0.4)
         plt.ylabel('$N_k(t)$')
         plt.legend(loc=2)

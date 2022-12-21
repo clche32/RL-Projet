@@ -26,11 +26,11 @@ d_ts  = [[TS.discounted, {'T':1000, 'gamma':1, 'alpha':1, 'beta':1}],
          [TS.discounted, {'T':1000, 'gamma':0.99, 'alpha':1, 'beta':1}],
          [TS.discounted, {'T':1000, 'gamma':0.9, 'alpha':1, 'beta':1}]]
 
-plot_means(means, T=1000)
-#plt.figure(figsize=(6.4, 14))
-#plot_estimated_means(means, runs=sw_ucb, N=100, title_mode="params")
-#plt.figure(figsize=(6.4, 14))
-#plot_arm_pulls(means, runs=sw_ucb, N=100, title_mode="params")
-#plt.figure()
-#plot_cumul_regret(instances, runs=sw_ucb, N=100, label_mode="params")
+#plot_means(means, T=1000)
+plt.figure(figsize=(4.5, 7.5))
+plot_estimated_means(means, runs=sw_ucb, N=100, title_mode="params")
+plt.figure(figsize=(4.5, 7.5))
+plot_arm_pulls(means, runs=sw_ucb, N=100, title_mode="params")
+plt.figure(figsize=(6.5, 7.5))
+plot_cumul_regret(instances, runs=sw_ucb, N=100, label_mode="params")
 plt.show()
