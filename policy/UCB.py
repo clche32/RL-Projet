@@ -145,3 +145,47 @@ def f_dsw(bandit, T, tau, gamma, xi, f) :
         X_t = gamma*X_t + new_X
 
     return stats
+
+def vanilla(bandit, T, xi) :
+    K = bandit.get_K()
+
+    # NEW : return statistics (means and ucbs) to plot UCBs
+    stats = np.zeros((2,K,T-K))
+    N_t = np.zeros(K)
+    X_t = np.zeros(K)
+
+    for t in range (K) : 
+        r = bandit.play(t, t) 
+        new_N = np.zeros(K)
+        new_N[t] = 1
+
+        new_X = np.zeros(K)
+        new_X[t] = r
+
+        N_t = N_t + new_N
+        X_t = X_t + new_X
+    
+    for t in range(K, T) :
+
+        #Compute the ucbs
+        means = (1/N_t)*X_t # Pas besoin de +1 car N_t positif tant que gamma est non nul
+        trusts = np.sqrt(xi*np.log(np.sum(N_t))/N_t)
+        ucbs = means + trusts
+        stats[0,:,t-K] = means
+        stats[1,:,t-K] = ucbs
+        
+        #Choose and play
+        I_t = np.argmax(ucbs)
+        r = bandit.play(I_t, t)
+
+        #Update
+        new_N = np.zeros(K)
+        new_N[I_t] = 1
+
+        new_X = np.zeros(K)
+        new_X[I_t] = r
+
+        N_t = N_t + new_N
+        X_t = X_t + new_X
+    
+    return stats

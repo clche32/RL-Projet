@@ -142,3 +142,40 @@ def f_dsw(bandit, T, alpha, beta, gamma, tau, f, seed=None):
         F_sw[k_t] += 1-r_t
 
     return stats
+
+def vanilla(bandit, T, alpha, beta, seed=None):
+    '''Play the given non-stationary bandit over T rounds using the
+    vanilla TS strategy for Bernoulli bandits with given priors
+    alpha and beta, discount factor gamma, and (optional) random seed.'''
+    K = bandit.get_K()
+
+    # NEW : return statistics (samples) to plot stuff
+    stats = np.zeros((K,T))
+    # to compute the posterior beta distribution for each action
+    # i.e : Beta(alpha + S_k, beta + F_k)
+    S = np.zeros(K)
+    F = np.zeros(K)
+
+    random = np.random.RandomState(seed)
+
+    for t in range(T):
+        # draw random samples
+        samples = np.zeros(K)
+        for k in range(K):
+            samples[k] = random.beta(alpha + S[k], beta + F[k])
+
+        # log stats
+        stats[:,t] = samples
+
+        # play the action with highest sample
+        k_t = np.argmax(samples)
+        r_t = bandit.play(k_t, t)
+
+        # update posterior parameters
+        for k in range(K):
+            S[k] = S[k]
+            F[k] = F[k]
+        S[k_t] += r_t
+        F[k_t] += 1-r_t
+
+    return stats
