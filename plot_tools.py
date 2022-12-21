@@ -122,7 +122,7 @@ def plot_ucbs(means, runs, N, title_mode=None):
             ax.set_title(name_dict[strategy.__name__] + module_dict[strategy.__module__],y=0.85)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
-            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
+            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.80)
         # Repeat same run N times with different bandit seeds
         ucbs = []
         for n in range(N):
@@ -157,7 +157,7 @@ def plot_samples(means, runs, N, title_mode=None):
             ax.set_title(name_dict[strategy.__name__] + module_dict[strategy.__module__], y=0.85)
         if title_mode=="params":
             param_name = param_dict[strategy.__name__]
-            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.85)
+            ax.set_title("$\%s$ = %s"%(param_name, params[param_name]),y=0.75)
         # Repeat same run N times with different bandit seeds
         est_means = []
         for n in range(N):
